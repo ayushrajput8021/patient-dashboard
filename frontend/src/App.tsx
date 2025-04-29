@@ -33,7 +33,7 @@ function App() {
 						<Route element={<ProtectedRoute />}>
 							<Route path='/' element={<Dashboard />} />
 							<Route path='/weight-progress' element={<WeightProgress />} />
-							<Route path='/shipment-details' element={<ShipmentDetails />} />
+							<Route path='/shipments' element={<ShipmentDetails />} />
 						</Route>
 
 						{/* Catch all */}

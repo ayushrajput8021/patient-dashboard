@@ -5,8 +5,6 @@ import { useDashboard } from '../hooks/useDashboard';
 import { useMedication } from '../hooks/useMedication';
 import { useWeightHistory } from '../hooks/useWeightHistory';
 import { formatDate, formatBMI } from '../utils/formatters';
-
-// Chart component
 import {
 	LineChart,
 	Line,
@@ -16,9 +14,9 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts';
-import Sidebar from '../components/Sidebar';
+import { Scale, Pill, Truck } from 'lucide-react';
 
-export const Dashboard = () => {
+const Dashboard = () => {
 	const { isAuthenticated } = useAuthStore();
 	const navigate = useNavigate();
 	const { dashboardData, isLoading: isDashboardLoading } = useDashboard();
@@ -33,175 +31,230 @@ export const Dashboard = () => {
 	}, [isAuthenticated, navigate]);
 
 	if (!isAuthenticated) {
-		return null; // or a loading indicator
+		return null;
 	}
 
 	const isLoading =
 		isDashboardLoading || isMedicationLoading || isWeightLoading;
 
-	// Prepare chart data
+	// Prepare chart data (last 7 entries)
 	const chartData =
 		weightHistory?.slice(-7).map((entry) => ({
-			date: new Date(entry.recordedAt).toLocaleDateString(),
+			date: new Date(entry.recordedAt).toLocaleDateString('en-US', {
+				month: 'short',
+				day: 'numeric',
+			}),
 			weight: entry.weight,
 			bmi: entry.bmi,
 		})) || [];
 
 	return (
-		<div className='container p-4 mx-auto'>
-			<Sidebar />
-			<div className='flex items-center justify-between mb-6'>
-				<h1 className='text-3xl font-bold'>Patient Dashboard</h1>
-				<div className='space-x-2'>
-					<button
-						onClick={() => navigate('/weight-progress')}
-						className='px-4 py-2 text-blue-700 transition-colors bg-blue-100 rounded-md hover:bg-blue-200'
-					>
-						Weight Progress
-					</button>
-					<button
-						onClick={() => navigate('/shipment-details')}
-						className='px-4 py-2 text-blue-700 transition-colors bg-blue-100 rounded-md hover:bg-blue-200'
-					>
-						Shipment Details
-					</button>
-				</div>
-			</div>
+		<div className='flex min-h-screen bg-gray-50'>
+			<main className='flex-1 p-6 md:pl-72 lg:p-8'>
+				<header className='mb-8'>
+					<h1 className='text-3xl font-bold tracking-tight text-gray-900'>
+						Your Health Dashboard
+					</h1>
+					<p className='mt-2 text-sm text-gray-600'>
+						Monitor your weight-loss progress and medication shipments
+					</p>
+				</header>
 
-			{isLoading ? (
-				<div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
-					{[1, 2, 3, 4].map((i) => (
-						<div
-							key={i}
-							className='p-6 bg-white rounded-lg shadow animate-pulse'
-						>
-							<div className='w-1/2 h-6 mb-4 bg-gray-200 rounded'></div>
-							<div className='h-12 mb-2 bg-gray-200 rounded'></div>
-							<div className='w-3/4 h-4 bg-gray-200 rounded'></div>
-						</div>
-					))}
-				</div>
-			) : (
-				<>
-					{/* Stats Cards */}
-					<div className='grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-3'>
-						{/* Current Weight Card */}
-						<div className='p-6 bg-white rounded-lg shadow'>
-							<h2 className='mb-2 text-lg font-semibold text-gray-700'>
-								Current Weight
-							</h2>
-							<p className='text-3xl font-bold text-blue-600'>
-								{dashboardData?.currentWeight} kg
-							</p>
-							<p className='mt-2 text-sm text-gray-500'>
-								Last updated:{' '}
-								{weightHistory?.length
-									? formatDate(
-											new Date(
-												weightHistory[weightHistory.length - 1].recordedAt
-											)
-									  )
-									: 'N/A'}
-							</p>
-						</div>
-
-						{/* BMI Card */}
-						<div className='p-6 bg-white rounded-lg shadow'>
-							<h2 className='mb-2 text-lg font-semibold text-gray-700'>
-								Body Mass Index
-							</h2>
-							<p className='text-3xl font-bold text-green-600'>
-								{dashboardData?.bmi.toFixed(1)}
-							</p>
-							<p className='mt-2 text-sm text-gray-500'>
-								{dashboardData
-									? formatBMI(dashboardData.bmi).split(' ')[1]
-									: 'N/A'}
-							</p>
-						</div>
-
-						{/* Current Medication Card */}
-						<div className='p-6 bg-white rounded-lg shadow'>
-							<h2 className='mb-2 text-lg font-semibold text-gray-700'>
-								Current Medication
-							</h2>
-							{medication ? (
-								<>
-									<p className='text-xl font-bold text-purple-600'>
-										{medication.type}
-									</p>
-									<p className='text-sm text-gray-600'>{medication.dosage}</p>
-									<p className='mt-2 text-xs text-gray-500'>
-										Since {formatDate(new Date(medication.startDate))}
-									</p>
-								</>
-							) : (
-								<p className='text-gray-500'>No active medication</p>
-							)}
-						</div>
-
-						{/* Next Shipment Card */}
-						<div className='p-6 bg-white rounded-lg shadow'>
-							<h2 className='mb-2 text-lg font-semibold text-gray-700'>
-								Next Shipment
-							</h2>
-							{dashboardData?.nextShipmentDate ? (
-								<>
-									<p className='text-xl font-bold text-indigo-600'>
-										{formatDate(new Date(dashboardData.nextShipmentDate))}
-									</p>
-									<p className='mt-2 text-sm text-gray-500'>
-										Your medication will arrive soon
-									</p>
-								</>
-							) : (
-								<p className='text-gray-500'>No upcoming shipments</p>
-							)}
-						</div>
+				{isLoading ? (
+					<div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+						{[1, 2, 3, 4].map((i) => (
+							<div
+								key={i}
+								className='p-6 bg-white rounded-lg shadow-lg animate-pulse'
+								aria-hidden='true'
+							>
+								<div className='w-1/2 h-6 mb-4 bg-gray-200 rounded'></div>
+								<div className='h-12 mb-2 bg-gray-200 rounded'></div>
+								<div className='w-3/4 h-4 bg-gray-200 rounded'></div>
+							</div>
+						))}
 					</div>
+				) : (
+					<>
+						{/* Stats Cards */}
+						<section
+							className='grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 lg:grid-cols-3'
+							aria-labelledby='dashboard-stats'
+						>
+							{/* Current Weight Card */}
+							<div className='p-6 transition-shadow duration-300 bg-white rounded-lg shadow-lg hover:shadow-xl'>
+								<div className='flex items-center justify-between mb-2'>
+									<h2 className='text-lg font-semibold text-gray-700'>
+										Current Weight
+									</h2>
+									<Scale className='w-5 h-5 text-blue-600' />
+								</div>
+								<p className='text-3xl font-bold text-blue-600'>
+									{dashboardData?.currentWeight
+										? `${dashboardData.currentWeight.toFixed(1)} kg`
+										: 'N/A'}
+								</p>
+								<p className='mt-2 text-sm text-gray-500'>
+									Last updated:{' '}
+									{weightHistory?.length
+										? formatDate(
+												new Date(
+													weightHistory[weightHistory.length - 1].recordedAt
+												)
+										  )
+										: 'N/A'}
+								</p>
+							</div>
 
-					{/* Weight Progress Chart */}
-					<div className='p-6 mb-8 bg-white rounded-lg shadow'>
-						<h2 className='mb-4 text-xl font-semibold text-gray-700'>
-							Weight Progress
-						</h2>
-						{chartData.length > 0 ? (
-							<div className='h-64'>
-								<ResponsiveContainer width='100%' height='100%'>
-									<LineChart
-										data={chartData}
-										margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-									>
-										<CartesianGrid strokeDasharray='3 3' />
-										<XAxis dataKey='date' />
-										<YAxis yAxisId='left' domain={['auto', 'auto']} />
-										<Tooltip />
-										<Line
-											yAxisId='left'
-											type='monotone'
-											dataKey='weight'
-											stroke='#8884d8'
-											name='Weight (kg)'
-										/>
-									</LineChart>
-								</ResponsiveContainer>
-								<div className='mt-2 text-right'>
+							{/* BMI Card */}
+							<div className='p-6 transition-shadow duration-300 bg-white rounded-lg shadow-lg hover:shadow-xl'>
+								<div className='flex items-center justify-between mb-2'>
+									<h2 className='text-lg font-semibold text-gray-700'>
+										Body Mass Index
+									</h2>
+									<Scale className='w-5 h-5 text-green-600' />
+								</div>
+								<p className='text-3xl font-bold text-green-600'>
+									{dashboardData?.bmi ? dashboardData.bmi.toFixed(1) : 'N/A'}
+								</p>
+								<p className='mt-2 text-sm text-gray-500'>
+									{dashboardData
+										? formatBMI(dashboardData.bmi).split(' ')[1]
+										: 'N/A'}
+								</p>
+							</div>
+
+							{/* Current Medication Card */}
+							<div className='p-6 transition-shadow duration-300 bg-white rounded-lg shadow-lg hover:shadow-xl'>
+								<div className='flex items-center justify-between mb-2'>
+									<h2 className='text-lg font-semibold text-gray-700'>
+										Current Medication
+									</h2>
+									<Pill className='w-5 h-5 text-purple-600' />
+								</div>
+								{medication ? (
+									<>
+										<p className='text-xl font-bold text-purple-600'>
+											{medication.type}
+										</p>
+										<p className='text-sm text-gray-600'>{medication.dosage}</p>
+										<p className='mt-2 text-xs text-gray-500'>
+											Since {formatDate(new Date(medication.startDate))}
+										</p>
+									</>
+								) : (
+									<p className='text-gray-500'>No active medication</p>
+								)}
+							</div>
+
+							{/* Next Shipment Card */}
+							<div className='p-6 transition-shadow duration-300 bg-white rounded-lg shadow-lg hover:shadow-xl'>
+								<div className='flex items-center justify-between mb-2'>
+									<h2 className='text-lg font-semibold text-gray-700'>
+										Next Shipment
+									</h2>
+									<Truck className='w-5 h-5 text-indigo-600' />
+								</div>
+								{dashboardData?.nextShipmentDate ? (
+									<>
+										<p className='text-xl font-bold text-indigo-600'>
+											{formatDate(new Date(dashboardData.nextShipmentDate))}
+										</p>
+										<p className='mt-2 text-sm text-gray-500'>
+											Your medication is on its way
+										</p>
+									</>
+								) : (
+									<p className='text-gray-500'>No upcoming shipments</p>
+								)}
+							</div>
+						</section>
+
+						{/* Weight Progress Chart */}
+						<section
+							className='p-6 bg-white rounded-lg shadow-lg'
+							aria-labelledby='weight-progress-chart'
+						>
+							<div className='flex items-center justify-between mb-4'>
+								<h2
+									id='weight-progress-chart'
+									className='text-xl font-semibold text-gray-700'
+								>
+									Weight Progress
+								</h2>
+							</div>
+							{chartData.length > 0 ? (
+								<div className='h-80'>
+									<ResponsiveContainer width='100%' height='100%'>
+										<LineChart
+											data={chartData}
+											margin={{ top: 10, right: 30, left: 0, bottom: 10 }}
+										>
+											<CartesianGrid strokeDasharray='3 3' stroke='#e5e7eb' />
+											<XAxis
+												dataKey='date'
+												tick={{ fontSize: 12, fill: '#6b7280' }}
+												tickMargin={10}
+											/>
+											<YAxis
+												yAxisId='left'
+												domain={['auto', 'auto']}
+												tick={{ fontSize: 12, fill: '#6b7280' }}
+												tickMargin={10}
+												label={{
+													value: 'Weight (kg)',
+													angle: -90,
+													position: 'insideLeft',
+													offset: -5,
+													fontSize: 14,
+													fill: '#6b7280',
+												}}
+											/>
+											<Tooltip
+												contentStyle={{
+													backgroundColor: '#fff',
+													border: '1px solid #e5e7eb',
+													borderRadius: '8px',
+												}}
+											/>
+											<Line
+												yAxisId='left'
+												type='monotone'
+												dataKey='weight'
+												stroke='#3b82f6'
+												strokeWidth={2}
+												dot={{ r: 4, fill: '#3b82f6' }}
+												activeDot={{ r: 6 }}
+												name='Weight (kg)'
+											/>
+										</LineChart>
+									</ResponsiveContainer>
+									<div className='mt-4 text-right'>
+										<button
+											onClick={() => navigate('/weight-progress')}
+											className='text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
+											aria-label='View full weight history'
+										>
+											View full history →
+										</button>
+									</div>
+								</div>
+							) : (
+								<div className='py-12 text-center'>
+									<p className='text-gray-500'>No weight history available</p>
 									<button
 										onClick={() => navigate('/weight-progress')}
-										className='text-sm text-blue-600 hover:underline'
+										className='mt-4 text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
+										aria-label='Add weight entry'
 									>
-										View full history →
+										Add a weight entry →
 									</button>
 								</div>
-							</div>
-						) : (
-							<p className='py-10 text-center text-gray-500'>
-								No weight history available
-							</p>
-						)}
-					</div>
-				</>
-			)}
+							)}
+						</section>
+					</>
+				)}
+			</main>
 		</div>
 	);
 };
