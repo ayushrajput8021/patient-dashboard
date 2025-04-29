@@ -5,6 +5,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 	label?: string;
 	error?: string;
 	icon?: LucideIcon;
+	iconPosition?: 'left' | 'right';
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -12,14 +13,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 		return (
 			<div className='w-full'>
 				{label && (
-					<label className='block text-sm font-medium text-gray-700 mb-1'>
+					<label className='block mb-1 text-sm font-medium text-gray-700'>
 						{label}
 					</label>
 				)}
 				<div className='relative rounded-md'>
 					{Icon && (
-						<div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-							<Icon className='h-5 w-5 text-gray-400' aria-hidden='true' />
+						<div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
+							<Icon className='w-5 h-5 text-gray-400' aria-hidden='true' />
 						</div>
 					)}
 					<input

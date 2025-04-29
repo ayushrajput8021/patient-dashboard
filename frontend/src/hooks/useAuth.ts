@@ -1,8 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import authService, { LoginCredentials } from '../services/authService';
 import { useAuthStore } from '../store/useAuthStore';
-
+import { useNavigate } from 'react-router-dom';
 export const useAuth = () => {
+	const navigate = useNavigate();
 	const {
 		user,
 		isAuthenticated,
@@ -20,6 +21,7 @@ export const useAuth = () => {
 			authService.login(credentials),
 		onSuccess: (data) => {
 			setUser(data.user);
+			navigate('/');
 		},
 		onError: (error: Error) => {
 			setError(error.message);
