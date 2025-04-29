@@ -12,46 +12,51 @@ This project is a React-based frontend for a healthcare company specializing in 
 - Dashboard overview (current weight, BMI, next shipment date, progress snapshot).
 - Weight progress (line chart showing historical weight data).
 - Shipment tracking (table or accordion for past/upcoming shipments, medication details).
+- Responsive design that works across desktop, tablet, and mobile devices.
 
 ### Tech Stack
 
-- **Framework**: React with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
+- **Framework**: React 19 with TypeScript
+- **Build Tool**: Vite 6
+- **Styling**: Tailwind CSS 4
 - **Icons**: Lucide React
 - **Charts**: Recharts
-- **State Management**: React Query
-- **Routing**: React Router
+- **State Management**:
+  - Tanstack React Query 5 (server state)
+  - Zustand 5 (client state)
+- **Routing**: React Router 7
+- **HTTP Client**: Axios
+- **Notifications**: React Hot Toast
 
 ## Prerequisites
 
-- Node.js 18 or higher
-- npm 9 or higher
+- Node.js 20 or higher
+- npm 10 or higher
 
 ## Setup Instructions
 
 1. Clone the repository:
 
-   ```
+   ```bash
    git clone <repository-url>
-   cd patient-dashboard-frontend
+   cd frontend
    ```
 
 2. Copy the environment variables file:
 
-   ```
+   ```bash
    cp .env.example .env
    ```
 
 3. Install dependencies:
 
-   ```
+   ```bash
    npm install
    ```
 
 4. Start the development server:
 
-   ```
+   ```bash
    npm run dev
    ```
 
@@ -74,16 +79,7 @@ This prototype uses mock data defined in `src/lib/api.ts`. In a production envir
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
-- `npm run format` - Run Prettier
-
-### Docker Support
-
-A Dockerfile is included for containerized development. To use it:
-
-```
-docker build -t patient-dashboard .
-docker run -p 5173:5173 patient-dashboard
-```
+- `npm run format` - Run Prettier (formats all TS/JS files in the src directory)
 
 ## Accessibility
 
@@ -96,7 +92,3 @@ This application follows WCAG 2.1 AA guidelines to ensure accessibility for all 
 - Screen reader compatibility
 
 Testing has been performed with keyboard navigation and screen reader simulation to ensure accessibility compliance.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
