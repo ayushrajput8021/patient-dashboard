@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  password    String
+  name        String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  weightEntries WeightEntry[]
+  shipments     Shipment[]
+  medications   Medication[]
+
+  @@map("users")
+}
+
+model WeightEntry {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  weight     Float
+  bmi        Float
+  recordedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("weight_entries")
+}
+
+model Shipment {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  medicationType  String
+  dosage          String
+  shipmentDate    DateTime
+  status          String // "Pending", "Shipped", "Delivered"
+  trackingInfo    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("shipments")
+}
+
+model Medication {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  type       String
+  dosage     String
+  startDate  DateTime
+  endDate    DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  // Relations
+  user       User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("medications")
+}

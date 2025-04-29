@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://user:password@db:5432/patient_dashboard
+      - JWT_SECRET=p4t13nTd4$hb04rDs3cur3JWT$3cr3tK3y
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+    networks:
+      - patient-dashboard-network
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=patient_dashboard
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - patient-dashboard-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user -d patient_dashboard']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+networks:
+  patient-dashboard-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
