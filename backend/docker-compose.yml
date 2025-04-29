@@ -11,8 +11,8 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DATABASE_URL=postgresql://user:password@db:5432/patient_dashboard
-      - JWT_SECRET=p4t13nTd4$hb04rDs3cur3JWT$3cr3tK3y
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
     volumes:
       - ./src:/app/src
       - ./prisma:/app/prisma
